@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -40,8 +40,7 @@ function verifyJWT(req, res, next) {
 
 async function run() {
     try {
-        const sellersCollection = client.db('assignment12').collection('sellers');
-        const buyersCollection = client.db('assignment12').collection('buyers');
+
         const usersCollection = client.db('assignment12').collection('users');
 
         // JWT token createing 
@@ -53,6 +52,7 @@ async function run() {
                 const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1d' })
                 return res.send({ accessToken: token });
             }
+            console.log(token)
             res.status(403).send({ accessToken: '' })
         });
 
