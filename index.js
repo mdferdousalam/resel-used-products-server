@@ -44,24 +44,51 @@ async function run() {
         const buyersCollection = client.db('assignment12').collection('buyers');
         const usersCollection = client.db('assignment12').collection('users');
 
-        // Save user  & generate JWT token same 
-        app.put('/user/:email', async (req, res) => {
-            const email = req.params.email
-            const user = req.body
-            const filter = { email: email }
-            const options = { upsert: true }
-            const updateDoc = {
-                $set: user,
+        // JWT token createing 
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1d' })
+                return res.send({ accessToken: token });
             }
-            const result = await usersCollection.updateOne(filter, updateDoc, options)
-            console.log(result)
+            res.status(403).send({ accessToken: '' })
+        });
 
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN, {
-                expiresIn: '1d',
-            })
-            console.log(token)
-            res.send({ result, token })
+
+        // admin verification 
+        const verifyAdmin = async (req, res, next) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ message: 'forbiden access' })
+            }
+            next()
+        }
+
+
+        app.post('/users', async (req, res) => {
+            const user = req.body
+            const query = {
+                email: user.email,
+            }
+            const alreadyAccountCreated = await usersCollection.find(query).toArray();
+            // checking if the account already exist or not 
+            if (alreadyAccountCreated.length) {
+                const message = `You already have an account by this email ${user.email}`
+                return res.send({ acknowledged: false, message })
+            }
+
+            const result = await usersCollection.insertOne(user)
+            console.log(result)
+            res.send({ result })
         })
+
+
+
     }
     finally {
 
