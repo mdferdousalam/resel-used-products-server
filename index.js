@@ -42,8 +42,26 @@ async function run() {
     try {
         const sellersCollection = client.db('assignment12').collection('sellers');
         const buyersCollection = client.db('assignment12').collection('buyers');
+        const usersCollection = client.db('assignment12').collection('users');
 
+        // Save user  & generate JWT token same 
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email
+            const user = req.body
+            const filter = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user,
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            console.log(result)
 
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, {
+                expiresIn: '1d',
+            })
+            console.log(token)
+            res.send({ result, token })
+        })
     }
     finally {
 
@@ -53,7 +71,7 @@ run().catch(console.log);
 
 
 app.get('/', async (req, res) => {
-    res.send('doctors portal server is running');
+    res.send('Reselling market server is running');
 })
 
 app.listen(port, () => console.log(`Reselling market server running on ${port}`))
