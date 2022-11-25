@@ -46,6 +46,7 @@ async function run() {
         // JWT token createing 
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
+            console.log(req.query)
             const query = { email: email };
             const user = await usersCollection.findOne(query);
             if (user) {
@@ -85,6 +86,13 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             console.log(result)
             res.send({ result })
+        })
+
+
+        app.get('/users', verifyJWT, async (req, res) => {
+            const query = {}
+            const users = await usersCollection.find(query).toArray();
+            res.send(users)
         })
 
 
