@@ -127,6 +127,14 @@ async function run() {
             const user = await usersCollection.findOne(query);
             res.send({ isSeller: user?.accountType === 'seller' });
         })
+        // All Sellers
+        app.get('/users/sellers', async (req, res) => {
+            const accountType = 'seller';
+            const query = { accountType: accountType }
+            const cursor = usersCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
     }
