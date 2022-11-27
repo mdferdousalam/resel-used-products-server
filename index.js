@@ -92,16 +92,40 @@ async function run() {
         app.get('/users', async (req, res) => {
             const query = {}
             const users = await usersCollection.find(query).toArray();
+            console.log(users)
             res.send(users)
         })
 
 
         // admin users 
-        app.get('/users/admin/:email', async (req, res) => {
-            const email = req.params.email;
+        app.get('/users/admin', async (req, res) => {
+            const email = req.query.email;
             const query = { email }
             const user = await usersCollection.findOne(query);
-            res.send({ isAdmin: user?.accountType === 'admin' });
+            console.log(user);
+            res.send({ isAdmin: user?.accountType === "admin" });
+        })
+        // buyers 
+        app.get('/users/buyer', async (req, res) => {
+            const email = req.query.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isBuyer: user?.accountType === 'buyer' });
+        })
+        //All buyers 
+        app.get('/users/buyers', async (req, res) => {
+            const accountType = 'buyer'
+            const query = { accountType: accountType }
+            const cursor = usersCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result);
+        })
+        // Seller 
+        app.get('/users/seller', async (req, res) => {
+            const email = req.query.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isSeller: user?.accountType === 'seller' });
         })
 
 
