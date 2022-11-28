@@ -42,6 +42,7 @@ async function run() {
     try {
 
         const usersCollection = client.db('assignment12').collection('users');
+        const productsCollection = client.db('assignment12').collection('products');
 
         // JWT token createing 
         app.get('/jwt', async (req, res) => {
@@ -134,6 +135,13 @@ async function run() {
             const cursor = usersCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
+        })
+
+        // product adding 
+        app.post('/products', async (req, res) => {
+            const products = req.body;
+            const result = await productsCollection.insertOne(products)
+            res.send(result)
         })
 
 
