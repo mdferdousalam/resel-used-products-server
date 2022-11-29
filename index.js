@@ -66,7 +66,7 @@ async function run() {
             const query = { email: decodedEmail };
             const user = await usersCollection.findOne(query);
 
-            if (user?.role !== 'admin') {
+            if (user?.accountType !== 'admin') {
                 return res.status(403).send({ message: 'forbiden access' })
             }
             next()
