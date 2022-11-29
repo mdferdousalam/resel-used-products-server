@@ -155,10 +155,8 @@ async function run() {
         })
 
 
-
         // apple category product finding for home page 
-
-        app.get('/products/apple', async (req, res) => {
+        app.get('/products/apple', verifyJWT, async (req, res) => {
             const appleCategory = 'apple'
             const query = { category: appleCategory }
             const cursor = productsCollection.find(query);
@@ -167,7 +165,7 @@ async function run() {
         })
 
         // samsung category wise products finding API 
-        app.get('/products/samsung', async (req, res) => {
+        app.get('/products/samsung', verifyJWT, async (req, res) => {
             const samsungCategory = 'samsung'
             const query = { category: samsungCategory }
             const cursor = productsCollection.find(query);
@@ -176,7 +174,7 @@ async function run() {
 
         })
         // Oppo category wise products finding API 
-        app.get('/products/oppo', async (req, res) => {
+        app.get('/products/oppo', verifyJWT, async (req, res) => {
             const oppoCategory = 'oppo'
             const query = { category: oppoCategory }
             const cursor = productsCollection.find(query);
