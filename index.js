@@ -91,7 +91,7 @@ async function run() {
         })
 
         // all users 
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {}
             const users = await usersCollection.find(query).toArray();
             console.log(users)
@@ -100,7 +100,7 @@ async function run() {
 
 
         // admin users 
-        app.get('/users/admin', async (req, res) => {
+        app.get('/users/admin', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email }
             const user = await usersCollection.findOne(query);
@@ -108,14 +108,14 @@ async function run() {
             res.send({ isAdmin: user?.accountType === "admin" });
         })
         // buyers 
-        app.get('/users/buyer', async (req, res) => {
+        app.get('/users/buyer', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email }
             const user = await usersCollection.findOne(query);
             res.send({ isBuyer: user?.accountType === 'buyer' });
         })
         //All buyers 
-        app.get('/users/buyers', async (req, res) => {
+        app.get('/users/buyers', verifyJWT, verifyAdmin, async (req, res) => {
             const accountType = 'buyer'
             const query = { accountType: accountType }
             const cursor = usersCollection.find(query);
@@ -123,14 +123,14 @@ async function run() {
             res.send(result);
         })
         // Seller 
-        app.get('/users/seller', async (req, res) => {
+        app.get('/users/seller', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email }
             const user = await usersCollection.findOne(query);
             res.send({ isSeller: user?.accountType === 'seller' });
         })
         // All Sellers
-        app.get('/users/sellers', async (req, res) => {
+        app.get('/users/sellers', verifyJWT, verifyAdmin, async (req, res) => {
             const accountType = 'seller';
             const query = { accountType: accountType }
             const cursor = usersCollection.find(query);
@@ -139,13 +139,13 @@ async function run() {
         })
 
         // product adding 
-        app.post('/products', async (req, res) => {
+        app.post('/products', verifyJWT, async (req, res) => {
             const products = req.body;
             const result = await productsCollection.insertOne(products)
             res.send(result)
         })
 
-        app.get('/products', async (req, res) => {
+        app.get('/products', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { sellerEmail: email }
             const cursor = productsCollection.find(query);
