@@ -145,12 +145,44 @@ async function run() {
             res.send(result)
         })
 
+        // individual seller's products finding API 
         app.get('/products', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { sellerEmail: email }
             const cursor = productsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
+        })
+
+
+
+        // apple category product finding for home page 
+
+        app.get('/products/apple', async (req, res) => {
+            const appleCategory = 'apple'
+            const query = { category: appleCategory }
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        // samsung category wise products finding API 
+        app.get('/products/samsung', async (req, res) => {
+            const samsungCategory = 'samsung'
+            const query = { category: samsungCategory }
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+
+        })
+        // Oppo category wise products finding API 
+        app.get('/products/oppo', async (req, res) => {
+            const oppoCategory = 'oppo'
+            const query = { category: oppoCategory }
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+
         })
 
     }
