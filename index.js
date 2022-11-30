@@ -106,6 +106,14 @@ async function run() {
             console.log(users)
             res.send(users)
         })
+        // Delete users 
+        app.delete('/users', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const users = await usersCollection.deleteOne(filter)
+            console.log(users)
+            res.send(users)
+        })
 
 
         // admin users 
@@ -192,6 +200,15 @@ async function run() {
             const result = await productsCollection.updateOne(query, updatedDoc, options)
             res.setHeader("Access-Control-Allow-Origin", "*")
             res.setHeader("Access-Control-Allow-Headers", "*")
+            res.send(result)
+        })
+
+        // Advertised products 
+        app.get('/advertisedproducts', async (req, res) => {
+
+            const query = { advertised: true, status: 'available' };
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
             res.send(result)
         })
 
