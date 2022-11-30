@@ -145,6 +145,19 @@ async function run() {
             res.send(result)
         })
 
+        // product status updating
+        app.put('/products', verifyJWT, async (req, res) => {
+            const products = req.body;
+            const id = req.query.id;
+            const query = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: products,
+            }
+            const result = await productsCollection.updateOne(query, updatedDoc, options)
+            res.send(result)
+        })
+
         // individual seller's products finding API 
         app.get('/products', verifyJWT, async (req, res) => {
             const email = req.query.email;
