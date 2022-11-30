@@ -186,22 +186,8 @@ async function run() {
             res.send(result)
         })
 
-        // product advertised updating
-        app.post('/advertiseproducts', verifyJWT, async (req, res) => {
-            const products = req.body;
-            delete products._id
-            // console.log(products);
-            const id = req.query.id;
-            const query = { _id: ObjectId(id) }
-            const options = { upsert: true }
-            const updatedDoc = {
-                $set: products,
-            }
-            const result = await productsCollection.updateOne(query, updatedDoc, options)
-            res.setHeader("Access-Control-Allow-Origin", "*")
-            res.setHeader("Access-Control-Allow-Headers", "*")
-            res.send(result)
-        })
+
+
 
         // Advertised products 
         app.get('/advertisedproducts', async (req, res) => {
