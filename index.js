@@ -10,8 +10,17 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 
+app.use(cors({
+    origin: ["http://localhost:3000", "https://assignment12-e6ef6.web.app"],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    // credentials: true,
+    // "Access-Control-Allow-Credentials": true,
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+}))
+
 // middleware
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
 
@@ -146,8 +155,10 @@ async function run() {
         })
 
         // product status updating
-        app.put('/products', verifyJWT, async (req, res) => {
+        app.post('/updateproducts', verifyJWT, async (req, res) => {
             const products = req.body;
+            delete products._id
+            // console.log(products);
             const id = req.query.id;
             const query = { _id: ObjectId(id) }
             const options = { upsert: true }
@@ -155,6 +166,17 @@ async function run() {
                 $set: products,
             }
             const result = await productsCollection.updateOne(query, updatedDoc, options)
+            res.setHeader("Access-Control-Allow-Origin", "*")
+            res.setHeader("Access-Control-Allow-Headers", "*")
+            res.send(result)
+        })
+
+        // ordered products finding API
+        app.get('/orderedproducts', verifyJWT, async (req, res) => {
+            const email = req.query.email;
+            const query = { buyerEmail: email };
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
             res.send(result)
         })
 
