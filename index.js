@@ -201,7 +201,7 @@ async function run() {
         // ordered products finding API
         app.get('/orderedproducts', verifyJWT, async (req, res) => {
             const email = req.query.email;
-            const query = { buyerEmail: email, status: 'available' };
+            const query = { buyerEmail: email, status: 'booked' };
             const cursor = productsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
