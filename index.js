@@ -153,9 +153,33 @@ async function run() {
             const result = await productsCollection.insertOne(products)
             res.send(result)
         })
+        // product deleteing
+        app.delete('/deleteproducts', verifyJWT, async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await productsCollection.deleteOne(filter)
+            res.send(result)
+        })
 
         // product status updating
         app.post('/updateproducts', verifyJWT, async (req, res) => {
+            const products = req.body;
+            delete products._id
+            // console.log(products);
+            const id = req.query.id;
+            const query = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: products,
+            }
+            const result = await productsCollection.updateOne(query, updatedDoc, options)
+            res.setHeader("Access-Control-Allow-Origin", "*")
+            res.setHeader("Access-Control-Allow-Headers", "*")
+            res.send(result)
+        })
+
+        // product advertised updating
+        app.post('/advertiseproducts', verifyJWT, async (req, res) => {
             const products = req.body;
             delete products._id
             // console.log(products);
@@ -175,6 +199,22 @@ async function run() {
         app.get('/orderedproducts', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { buyerEmail: email };
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        // wishlisted products 
+        app.get('/wishListedproducts', verifyJWT, async (req, res) => {
+            const email = req.query.email;
+            const query = { buyerEmail: email, wishList: true, status: 'available' };
+            const cursor = productsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+        // Reported products cl
+        app.get('/reportedtedproducts', verifyJWT, verifyAdmin, async (req, res) => {
+            const query = { reported: true };
             const cursor = productsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
