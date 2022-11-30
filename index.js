@@ -201,9 +201,17 @@ async function run() {
         // ordered products finding API
         app.get('/orderedproducts', verifyJWT, async (req, res) => {
             const email = req.query.email;
-            const query = { buyerEmail: email };
+            const query = { buyerEmail: email, status: 'available' };
             const cursor = productsCollection.find(query);
             const result = await cursor.toArray();
+            res.send(result)
+        })
+        // payment products finding API
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id
+            // const email = req.query.email;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.findOne(query);
             res.send(result)
         })
 
@@ -259,6 +267,25 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
 
+        })
+
+
+        // payment intent
+        app.post('/create-payment-intent', async (req, res) => {
+            const booking = req.body;
+            const price = booking.price;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                payment_method_types: [
+                    'card'
+                ]
+            })
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
         })
 
     }
